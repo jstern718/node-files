@@ -4,31 +4,30 @@ const axios = require("axios");
 const fsP = require("fs/promises");
 const argv = process.argv;
 
-//TODO: refactor contents
 async function cat(path) {
+  let contents;
+
   try {
-    const contents = await fsP.readFile(path, "utf8");
-    console.log(contents);
+    contents = await fsP.readFile(path, "utf8");
   } catch (err) {
     console.error(err);
     process.exit(1);
   }
+
+  console.log(contents);
 }
 
-//TODO: refactor resp
 async function webCat(URL) {
+  let resp;
+
   try {
-    const resp = await axios.get(URL);
-    console.log(resp.data.slice(0, 80));
+    resp = await axios.get(URL);
   } catch (err) {
     console.error(err);
     process.exit(1);
   }
+
+  console.log(resp.data.slice(0, 80));
 }
 
-//TODO: ternary
-if (argv[2].startsWith("http")) {
-  webCat(argv[2]);
-} else {
-  cat(argv[2]);
-}
+argv[2].startsWith("http") ? webCat(argv[2]) : cat(argv[2])
