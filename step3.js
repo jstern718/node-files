@@ -14,7 +14,7 @@ async function cat(path) {
     process.exit(1);
   }
 
-  console.log(contents);
+  return contents;
 }
 
 async function webCat(URL) {
@@ -27,12 +27,15 @@ async function webCat(URL) {
     process.exit(1);
   }
 
-  console.log(resp.data.slice(0, 80));
+  return resp.data.slice(0, 80);
 }
 
 async function writeOutput(path, data, encoding){
+  let content;
+
+  data.startsWith("http") ? content = await webCat(data) : content = await cat(data)
   try{
-    fsP.writeFile(path, data, encoding);
+    fsP.writeFile(path, content, encoding);
   } catch(err){
       console.error(err);
       process.exit(1);
@@ -41,7 +44,6 @@ async function writeOutput(path, data, encoding){
 
 if (argv[2] === "--out"){
   writeOutput(argv[3], argv[4], "utf-8");
-}
-else{
+} else {
   argv[2].startsWith("http") ? webCat(argv[2]) : cat(argv[2])
 }
